@@ -664,7 +664,7 @@ box-shadow: 2px 2px 9px 0px rgba(0,0,0,0.68);
     height: 75px;
     position: fixed;
     top: 40%;
-    left: -4px;
+    left: -10px;
     z-index: 11;
     background: url(../images/nav-icon2.png) no-repeat;
 }

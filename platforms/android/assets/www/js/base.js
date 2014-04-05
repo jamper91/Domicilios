@@ -580,14 +580,14 @@ function efecto()
     if (efect)
     {
         var le = $("#iconMenu2").css("left");
-        if (le == "-4px") {
-            $("#iconMenu2").animate({"left": "-2px"}, tiem, function()
+        if (le == "-12px") {
+            $("#iconMenu2").animate({"left": "-10px"}, tiem, function()
             {
                 efecto();
             });
             //$("#iconMenu2").animate({"left":"0px"},tiem);
         } else
-            $("#iconMenu2").animate({"left": "-4px"}, tiem, function()
+            $("#iconMenu2").animate({"left": "-12px"}, tiem, function()
             {
                 efecto();
             });
@@ -655,6 +655,9 @@ function iniciarMenu()
         //Oculto el cerrar sesion
         $("#cerrarsesion").css("display","none");
     }
+    
+    //Funcion para cuando oprime el link superior que dice back
+    back();
 
 }
 function filterList(header, list)
