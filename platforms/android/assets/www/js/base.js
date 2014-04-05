@@ -650,8 +650,11 @@ function iniciarMenu()
     //Muestro el correo del usuario
     if (getCorreoUsuario() != null)
         $("#welc").html(getCorreoUsuario());
-    else
+    else{
         $("#welc").html("");
+        //Oculto el cerrar sesion
+        $("#cerrarsesion").css("display","none");
+    }
 
 }
 function filterList(header, list)

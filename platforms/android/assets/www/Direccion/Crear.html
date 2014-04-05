@@ -164,11 +164,6 @@ License URL: http://creativecommons.org/licenses/by/3.0/
     <script type="text/javascript">
         $(function() {
             iniciarMenu();
-            //Muestro el correo del usuario
-            if (getCorreoUsuario() != null)
-                $("#welc").html(getCorreoUsuario());
-            else
-                $("#welc").html("");
         });
     </script>
     <!-----/mobile-menu----->
@@ -187,7 +182,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                 <li><a href="../ciudad.html">Ciudad</a></li>
                 <li><a href="../ubicacion.html">Direccion</a></li>
                 <li><a href="../carrito.html">Carrito</a></li>
-                <li><a href="#" onclick="cerrarSesion('../')">Cerrar Sesion</a></li>
+                <li><a id="cerrarsesion" href="#" onclick="cerrarSesion('../')">Cerrar Sesion</a></li>
                 <li><a href="#" onclick="salir()">Salir</a></li>
             </ul>
         </nav>
@@ -199,7 +194,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
             <div class="wrap">	 
                 <div class="logo">
                         <a class="back" ></a>
-                    <img src="images/logo.png" alt="" class="logo1"/>
+                    <img src="../images/logo.png" alt="" class="logo1"/>
                 </div>
                 <div class="clear"></div>
             </div>
