@@ -5109,28 +5109,44 @@ FB.provide('', {
         var alertTitle = 'Something Went Wrong\n\n';
         switch (params.method) {
             case 'auth.login':
-                FB._nativeInterface.login(params, cb, function(e) {alert(alertTitle + e);});
+                FB._nativeInterface.login(params, cb, function(e) {
+//                    alert(alertTitle + e);
+                });
                 break;
             case 'permissions.request':
-                FB._nativeInterface.login(params, cb, function(e) {alert(alertTitle + e);});
+                FB._nativeInterface.login(params, cb, function(e) {
+//                    alert(alertTitle + e);
+                });
                 break;
             case 'permissions.oauth':
-                FB._nativeInterface.login(params, cb, function(e) {alert(alertTitle + e);});
+                FB._nativeInterface.login(params, cb, function(e) {
+//                    alert(alertTitle + e);
+                });
                 break;
             case 'auth.logout':
-                FB._nativeInterface.logout(cb, function(e) {alert(alertTitle + e);});
+                FB._nativeInterface.logout(cb, function(e) {
+//                    alert(alertTitle + e);
+                });
                 break;
             case 'auth.status':
-                FB._nativeInterface.getLoginStatus(cb, function(e) {alert(alertTitle + e);});
+                FB._nativeInterface.getLoginStatus(cb, function(e) {
+//                    alert(alertTitle + e);
+                });
                 break;
             case 'login.status':
-                FB._nativeInterface.getLoginStatus(cb, function(e) {alert(alertTitle + e);});
+                FB._nativeInterface.getLoginStatus(cb, function(e) {
+//                    alert(alertTitle + e);
+                });
                 break;
             case 'feed':
-                FB._nativeInterface.dialog(params, cb, function(e) {alert(alertTitle + e);});
+                FB._nativeInterface.dialog(params, cb, function(e) {
+//                    alert(alertTitle + e);
+                });
                 break;
             case 'apprequests':
-                FB._nativeInterface.dialog(params, cb, function(e) {alert(alertTitle + e);});
+                FB._nativeInterface.dialog(params, cb, function(e) {
+//                    alert(alertTitle + e);
+                });
             break;
         }
         return;
