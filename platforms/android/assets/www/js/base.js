@@ -752,3 +752,11 @@ function back()
     });
     
 }
+//Funcion que se encarga de escuchar el evento de deslizar el dedo y abre el menu
+$$(document).ready(function ()
+{
+    $$('body').swipeRight(function()
+    {
+        $('#iconMenu2').click();
+    });
+});
