@@ -1,0 +1,344 @@
+<!--A Design by W3layouts
+Author: W3layout
+Author URL: http://w3layouts.com
+License: Creative Commons Attribution 3.0 Unported
+License URL: http://creativecommons.org/licenses/by/3.0/
+-->
+
+<!DOCTYPE HTML>
+<head>
+    <title>Domicilio</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <meta name="keywords" content="House Framing Iphone web template, Andriod web template, Smartphone web template, free webdesigns for Nokia, Samsung, LG, SonyErricsson, Motorola web design" />
+    <link href="../css/style.css" rel="stylesheet" type="text/css" media="all"/>
+    <link href="../js/jqueryui/css/base/jquery-ui.css" rel="stylesheet" type="text/css" media="all"/>
+    <script type="text/javascript" src="../js/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript" src="../js/jqueryui/jquery-ui.js"></script>
+    <script type="text/javascript" src="../cordova.js"></script>
+    <script type="text/javascript" src="../js/base.js"></script>
+    <!--bPopup-->
+    <script type="text/javascript" src="../js/jquery.bpopup.min.js"></script>
+    <!--Fin bPopup-->
+    <script type="text/javascript">
+
+        function agregarDireccion(dir, barrio, nombre, otros)
+        {
+            //Variables para el Ajax
+            var url = "http://mapelo63-001-site1.smarterasp.net/api/direccion";
+            var idDireccion;
+            var men = "";
+            //Hago el ajax
+            $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'xml',
+                data: {
+                    'idUsuario': getIdUsuario(),
+                    'direccion': dir,
+                    'barrio': barrio,
+                    'idCiudad': getIdCiudad(),
+                    'nombre': nombre,
+                    'otros': otros
+                },
+                error: function(data)
+                {
+                    men = "Lo sentimos, tenemos problemas tecnicos";
+                },
+                success: function(xml)
+                {
+
+                    //Obtengo el valor devuelto por el webservice
+                    idDireccion = $('int', xml).text();
+                    if (idDireccion <= 0)
+                        men = "Lo sentimos, la direccion no pudo ser creada ";
+                }
+            }).done(function()
+            {
+                if (idDireccion > 0)
+                {
+                    //almaceno las variables en sesion
+                    setVariable("idDireccion", idDireccion);
+                    setVariable("direccion", dir);
+                    //Elimino la direccion temporal, si existe
+                    removeVariable("tmpDireccion");
+                    //Redirijo a la pagina de confirmacion de compra
+                    $(location).attr("href", "../Carrito/confirmarCompra.html");
+                } else {
+                    alert(men);
+                }
+            });//Fin ajax agregar direccion
+        }
+        $(document).ready(function()
+        {
+            (function()
+            {
+                //Determino que formulario mostrar
+                var idciudad = getIdCiudad();
+                if (idciudad != "153")
+                {
+                    $("#direccionBogota").css("display", "block");
+                }
+                else
+                {
+                    $("#direccionCartagena").css("display", "block");
+                }
+
+                //Determino si existe alguna direccion temporal
+                if (getTmpDireccion())
+                {
+                    var direccion = getTmpDireccion();
+                    if (idciudad != "153")
+                    {
+                        direccion = direccion.replace("No", "");
+                        var aux = direccion.split(" ");
+                        var tipo = aux[0];
+                        var dir1 = aux[1];
+                        var dir2 = aux[3];
+                        var dir3 = aux[5];
+
+                        $("#sltDireccionBogota1").val(tipo);
+                        $("#txtDirrecionBogota1").val(dir1);
+                        $("#txtDirrecionBogota2").val(dir2);
+                        $("#txtDirrecionBogota3").val(dir3);
+                    } else {
+                        $("#txtDirrecionCartagena1").val(direccion);
+                    }
+
+                }
+            })();
+            $("#btnDireccion1").click(function(e)
+            {
+                e.preventDefault();
+                if (checkConnection())
+                {
+
+                    //Tomo las variables
+                    var tipo = $("#sltDireccionBogota1 option:selected").text();
+                    var dir1 = $("#txtDirrecionBogota1").val();
+                    var dir2 = $("#txtDirrecionBogota2").val();
+                    var dir3 = $("#txtDirrecionBogota3").val();
+
+                    //Son obligatorios los primeros 3 cuadros de texto
+                    if (tipo && dir1 && dir2 && dir3)
+                    {
+                        var dir = tipo + " " + dir1 + " No " + dir2 + " - " + dir3;
+                        var barrio = "";
+                        var nombre = $("#txtDirrecionBogota5").val();
+                        var otros = $("#txtDirrecionBogota6").val();
+                        //Guardo la direccion
+                        agregarDireccion(dir, barrio, nombre, otros);
+                    } else {
+                        alert("Solo los campos Nombre y Otros pueden estar vacios");
+                    }
+
+                } else {
+                    alert("Hay un problema en la conexion a internet");
+                }//Fin If para determinar la conexion
+
+            });
+            $("#btnDireccion2").click(function(e)
+            {
+                e.preventDefault();
+                if (checkConnection())
+                {
+
+                    //Tomo las variables
+                    var dir = $("#txtDirrecionCartagena1").val();
+                    var barrio = "";
+                    var nombre = $("#txtDirrecionCartagena2").val();
+                    var otros = $("#txtDirrecionCartagena3").val();
+                    //Guardo la direccion
+                    agregarDireccion(dir, barrio, nombre, otros);
+                    
+                } else {
+                    alert("Hay un problema en la conexion a internet");
+                }//Fin If para determinar la conexion
+            });
+        });
+    </script>
+    <!-----mobile-menu----->
+    <link type="text/css" rel="stylesheet" href="../css/jquery.mmenu.all.css" />
+    <script type="text/javascript" src="../js/jquery.mmenu.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            iniciarMenu();
+            //Muestro el correo del usuario
+            if (getCorreoUsuario() != null)
+                $("#welc").html(getCorreoUsuario());
+            else
+                $("#welc").html("");
+        });
+    </script>
+    <!-----/mobile-menu----->
+</head>
+<body>
+    <!-- Menu -->
+    <div id="page">
+        <div id="header">
+            <a class="navicon" id="iconMenu" href="#menu-left"> </a>        
+            <a class="navicon2" id="iconMenu2" href="#menu-left"> </a>        
+        </div>
+        <nav id="menu-left">
+            <ul>
+                <li><a href="#" id="welc">Bienvenido: </a></li>
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="../ciudad.html">Ciudad</a></li>
+                <li><a href="../ubicacion.html">Direccion</a></li>
+                <li><a href="../carrito.html">Carrito</a></li>
+                <li><a href="#" onclick="cerrarSesion('../')">Cerrar Sesion</a></li>
+                <li><a href="#" onclick="salir()">Salir</a></li>
+            </ul>
+        </nav>
+    </div>
+    <!-- Fin Menu -->
+    <!--Cabecera-->
+    <div class="header" id="top">
+        <div class="header_top">
+            <div class="wrap">	 
+                <div class="logo">
+                    <a href="../index.html"><img src="../images/logo.png" class="logo1" alt="" /></a>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+
+    </div>
+    <!--Fin cabecera-->
+    <!--Contenido-->
+    <div class="main">  
+        <div class="wrap">  		 
+
+            <div class="content">
+                <!--Direccion Bogota-->
+                <div id="direccionBogota" class="sidebar_right_bottom" style="display: none">
+                    <h3>Direccion</h3>
+                    <div class="login_form">        		
+                        <form>
+                            <div>
+                                <table width="100%">
+                                    <tr>
+                                        <td>
+                                            <span>
+                                                <select id="sltDireccionBogota1" class="mySelect">
+                                                    <option value="Calle">Calle</option>
+                                                    <option value="Avenida">Avenida</option>
+                                                </select>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span><input id="txtDirrecionBogota1" name="txtDirrecion1" type="text"></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            # &nbsp;<input id="txtDirrecionBogota2" name="txtDirrecion2" type="text" style="width: 60%">
+                                        </td>
+                                        <td>
+                                            - &nbsp;<input id="txtDirrecionBogota3" name="txtDirrecion3" type="text" style="width: 60%">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Otros(Apartamento, Edificio, Interior,etc)
+                                        </td>
+                                        <td colspan="3">
+                                            <span><input id="txtDirrecionBogota6" name="txtDirrecion6" type="text"></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Nombre
+                                        </td>
+                                        <td colspan="3">
+                                            <span><input id="txtDirrecionBogota5" name="txtDirrecion5" type="text"></span>
+
+                                        </td>
+                                    </tr>
+
+                                </table>
+
+
+                            </div>
+
+                            <div>
+                                <span><input id="btnDireccion1" type="submit" class="mybutton" value="Crear"></span>
+                            </div>
+                            <br>
+
+                        </form>
+                    </div>
+                </div>
+                <!--Fin direccion Bogota-->
+                <!--Direccion Cartagena-->
+                <div id="direccionCartagena" class="sidebar_right_bottom" style="display: none">
+                    <h3>Direccion</h3>
+                    <div class="login_form">        		
+                        <form>
+                            <div>
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <span>Nombre: <input id="txtDirrecionCartagena2" name="txtDirrecionCartagena2" type="text" ></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <span>Direccion: <input id="txtDirrecionCartagena1" name="txtDirrecionCartagena1" type="text" ></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <span>Otros(Apartamento, Edificio, Interior,etc) <input id="txtDirrecionCartagena3" name="txtDirrecionCartagena3" type="text" ></span>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                            </div>
+                            <div>
+                                <span><input id="btnDireccion2" type="submit" class="mybutton" value="Buscar"></span>
+                            </div>
+                            <br>
+
+                        </form>
+                    </div>
+                </div>
+                <!--Fin Direccion Cartagena-->
+            </div>
+
+            <div class="clear"></div>
+        </div>
+    </div>
+    <!--Fin Contenido-->
+
+    <!--Footer-->
+    <div class="footer">
+        <div class="copy-right" >
+
+            <div align="center" style="width: 100%; height: 100%">
+                <a id="iconCarrito" href="../Carrito/carrito.html" >
+                    <img id="imgCarrito" src="../images/carrito.png" class="carrito"/>
+                    <!--JavaScript para cambiar la imagen la imagen-->
+                    <script type="text/javascript" >
+                        (function()
+                        {
+                            var carrito = getCarrito();
+                            var i = 0;
+                            var html = "";
+                            if (carrito.productos.length > 0)
+                            {
+                                $("#imgCarrito").attr("src", "../images/carritoFull.png");
+                            }
+                        })();
+                    </script>
+                </a>
+            </div>
+            <div class="clear"></div>
+
+        </div>
+    </div>
+    <!--Fin Footer-->
+</body>
+</html>
+

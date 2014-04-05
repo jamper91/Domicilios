@@ -1,0 +1,153 @@
+<!--A Design by W3layouts
+Author: W3layout
+Author URL: http://w3layouts.com
+License: Creative Commons Attribution 3.0 Unported
+License URL: http://creativecommons.org/licenses/by/3.0/
+-->
+<!DOCTYPE HTML>
+<head>
+    <title>Domicilio</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <meta name="keywords" content="House Framing Iphone web template, Andriod web template, Smartphone web template, free webdesigns for Nokia, Samsung, LG, SonyErricsson, Motorola web design" />
+    <link href="css/style.css" rel="stylesheet" type="text/css" media="all"/>
+    <script type="text/javascript" src="js/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/base.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function()
+        {
+            (function()
+            {
+                //Obtengo el id de la ciudad actual
+                var idCiudad = getIdCiudad();
+                console.log("idCiudad: " + idCiudad);
+                //Cambio el select
+                $("#sltCiudad").val(idCiudad);
+                //$("#sltCiudad option[value=" + idCiudad + "]").attr("selected",true);
+            })();
+            $("#btnCambiarCiudad").click(function(e)
+            {
+                e.preventDefault();
+                var idCiudad = $("#sltCiudad option:selected").val();
+                var nombreCiudad = $("#sltCiudad option:selected").text();
+                setVariable("idCiudad", idCiudad);
+                setVariable("nombreCiudad", nombreCiudad);
+                //Redirijo a la pagina anterior
+                parent.history.back();
+            });
+        });
+    </script>
+    <!-----mobile-menu----->
+    <link type="text/css" rel="stylesheet" href="css/jquery.mmenu.all.css" />
+    <script type="text/javascript" src="js/jquery.mmenu.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            iniciarMenu();
+            //Muestro el correo del usuario
+            if (getCorreoUsuario() != null)
+                $("#welc").html(getCorreoUsuario());
+            else
+                $("#welc").html("");
+        });
+    </script>
+    <!-----/mobile-menu----->
+</head>
+<body>
+    <!-- Menu -->
+    <div id="page">
+        <div id="header">
+            <a class="navicon" id="iconMenu" href="#menu-left"> </a>        
+            <a class="navicon2" id="iconMenu2" href="#menu-left"> </a>        
+        </div>
+        <nav id="menu-left">
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="ciudad.html">Ciudad</a></li>
+                <li><a href="ubicacion.html">Direccion</a></li>
+                <li><a href="Carrito/carrito.html">Carrito</a></li>
+                <li><a href="#" onclick="cerrarSesion('')">Cerrar Sesion</a></li>
+                <li><a href="#" onclick="salir()">Salir</a></li>
+            </ul>
+        </nav>
+    </div>
+    <!-- Fin Menu -->
+    <div class="header" id="top">
+        <div class="header_top">
+            <div class="wrap">	 
+                <div class="logo">
+                    <a href="index.html"><img src="images/logo.png" alt="" class="logo1" /></a>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+
+    </div>
+    <div class="main">  
+        <div class="wrap">  		 
+
+            <div class="content">
+                <div class="sidebar_right_bottom">
+                    <h3>Cambiar Ciudad</h3>
+                    <div class="login_form">        		
+                        <form id="ingresar">
+                            <div>
+                                <span><label>Ciudad</label></span>
+                                <span>
+                                    <select id="sltCiudad" class="mySelect">
+                                        <option value="151">Bogota</option>
+                                        <option value="1">Medellin</option>
+                                        <option value="153">Cartagena</option>
+                                        <option value="1061">Cali</option>
+                                        <option value="888">Bucaramanga</option>
+                                    </select>
+                                </span>
+                            </div>
+
+                            <div>
+                                <span>
+                                    <input id="btnCambiarCiudad" type="submit" class="mybutton" value="Cambiar"><br>
+                                </span>
+                            </div>
+
+                        </form>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="clear"></div>
+        </div>
+    </div>
+    <!--Footer-->
+    <div class="footer">
+        <div class="copy-right" >
+
+            <div align="center" style="width: 100%; height: 100%">
+                <a id="iconCarrito" href="Carrito/carrito.html" >
+                    <img id="imgCarrito" src="images/carrito.png" class="carrito"/>
+                    <!--JavaScript para cambiar la imagen la imagen-->
+                    <script type="text/javascript" >
+                        (function()
+                        {
+                            var carrito = getCarrito();
+                            var i = 0;
+                            var html = "";
+                            if (carrito.productos.length > 0)
+                            {
+                                $("#imgCarrito").attr("src", "images/carritoFull.png");
+                            }
+                        })();
+                    </script>
+                </a>
+            </div>
+            <div class="clear"></div>
+
+        </div>
+    </div>
+    <!--Fin Footer-->
+</body>
+</html>
+

@@ -1,0 +1,299 @@
+<!--A Design by W3layouts
+Author: W3layout
+Author URL: http://w3layouts.com
+License: Creative Commons Attribution 3.0 Unported
+License URL: http://creativecommons.org/licenses/by/3.0/
+-->
+<!DOCTYPE HTML>
+<head>
+    <title>Domicilio</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <meta name="keywords" content="House Framing Iphone web template, Andriod web template, Smartphone web template, free webdesigns for Nokia, Samsung, LG, SonyErricsson, Motorola web design" />
+    <link href="../css/style.css" rel="stylesheet" type="text/css" media="all"/>
+    <link href="../js/jqueryui/css/base/jquery-ui.css" rel="stylesheet" type="text/css" media="all"/>
+    <script type="text/javascript" src="../js/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript" src="../js/jqueryui/jquery-ui.js"></script>
+    <script type="text/javascript" src="../cordova.js"></script>
+    <script type="text/javascript" src="../js/base.js"></script>
+    <!--bPopup-->
+    <script type="text/javascript" src="../js/jquery.bpopup.min.js"></script>
+    <!--Fin bPopup-->
+    <script type="text/javascript">
+        function setDatosUsuario(id, correo, clave)
+        {
+            setVariable("idUsuario", id);
+            setVariable("correoUsuario", correo);
+            setVariable("claveUsuario", clave);
+        }
+        $(document).ready(function()
+        {
+            $("#btnRegistrar").click(function(e)
+            {
+                e.preventDefault();
+                if (checkConnection())
+                {
+                    //Muestro el dialogo 
+                    dialogo("<img src='../images/loading.GIF'/> Registrando");
+                    var mensaje = "";
+                    var registro = false;
+                    //Valores a pasar al ajax
+                    var nombres = $("#txtNombres").val();
+                    var correo = $("#txtCorreo").val();
+                    var clave = $("#txtClave").val();
+                    var clave2 = $("#txtClave2").val();
+                    var url = "http://mapelo63-001-site1.smarterasp.net/api/usuario";
+                    //Verifico que ningun campo este vacio
+                    if (nombres.length > 0 && correo.length > 0 && clave.length > 0 & clave2.length > 0)
+                    {
+                        //Verifico que las contrase&ntilde;as esten bien
+                        if (clave == clave2)
+                        {
+                            //Hago el ajax
+                            $.ajax({
+                                url: url,
+                                type: 'GET',
+                                dataType: 'xml',
+                                data: {'accion': 'registrar', 'pass': clave, 'correo': correo, 'nombre': nombres},
+                                error: function(data)
+                                {
+                                    mensaje = "Lo sentimos, tenemos problemas tecnicos";
+                                },
+                                success: function(xml)
+                                {
+                                    //Obtengo el valor devuelto por el webservice
+                                    var id = $('string', xml).text();
+                                    console.log("id: "+ id);
+                                    //Verifico que el usuario se logeo
+                                    if (id != '0')
+                                    {
+
+                                        setDatosUsuario(id,correo,clave);
+                                        //Esto es por si el usuario le dio confirmar compra y no se habia registrado
+                                        if (!getConfirmarCompra())
+                                            registro = true;
+
+                                    } else {
+                                        mensaje = "Lo sentimos, no se puede crear el usuario, pues ya existe en la base de datos";
+                                    }
+                                }
+                            }).done(function()
+                            {
+                                //Cierro el dialogo
+                                cerrarDialog();
+                                if (getConfirmarCompra())
+                                {
+                                    localStorage.removeItem("confirmarCompra");
+                                    $(location).attr("href", "../Carrito/carrito.html");
+                                } else {
+                                    if (registro)
+                                        $(location).attr("href", "../ubicacion.html");
+                                    else
+                                        alert(mensaje);
+                                }
+
+
+                            });//Fin ajax
+
+                        } else {
+                            alert("Las contrase&ntilde;as deben coincidir");
+                        }
+                    } else {
+                        alert("Ningun campo puede estar vacio");
+                    }
+                } else {
+                    alert("Por favor verifique su conexion de internet");
+                }
+            });
+            $("#btnFacebook").click(function ()
+            {
+                login();
+            });
+            $("#btnLogear").click(function(e){
+                e.preventDefault();
+                $(location).attr("href","../index.html");
+            });
+        });
+    </script>
+    <!-----mobile-menu----->
+    <link type="text/css" rel="stylesheet" href="../css/jquery.mmenu.all.css" />
+    <script type="text/javascript" src="../js/jquery.mmenu.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            iniciarMenu();
+
+        });
+    </script>
+    <!-----/mobile-menu----->
+</head>
+<body>
+    <div id="fb-root"></div>
+    <!-- Menu -->
+    <div id="page">
+        <div id="header">
+            <a class="navicon" id="iconMenu" href="#menu-left"> </a>        
+            <a class="navicon2" id="iconMenu2" href="#menu-left"> </a>        
+        </div>
+        <nav id="menu-left">
+            <ul>
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="../ciudad.html">Ciudad</a></li>
+                <li><a href="../ubicacion.html">Direccion</a></li>
+                <li><a href="../carrito.html">Carrito</a></li>
+                <li><a href="#" onclick="cerrarSesion('../')">Cerrar Sesion</a></li>
+                <li><a href="#" onclick="salir()">Salir</a></li>
+            </ul>
+        </nav>
+    </div>
+    <!-- Fin Menu -->
+    <!--Cabecera-->
+    <div class="header" id="top">
+        <div class="header_top">
+            <div class="wrap">	 
+                <div class="logo">
+                    <a href="../index.html"><img src="../images/logo.png" class="logo1" alt="" /></a>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+
+    </div>
+    <!--Fin Cabecera-->
+    <!--Contenido-->
+    <div class="main">  
+        <div class="wrap">  		 
+
+            <div class="content">
+                <div class="sidebar_right_bottom">
+                    <h3>Registrar</h3>
+                    <div class="login_form">        		
+                        <form>
+                            <div>
+                                <span>
+                                    <label>Nombres</label>
+                                </span>
+                                <span>
+                                    <input id="txtNombres" name="txtNombres" type="text" class="textbox">
+                                </span>
+                            </div>
+                            <div>
+                                <span>
+                                    <label>Correo</label>
+                                </span>
+                                <span>
+                                    <input id="txtCorreo" name="txtCorreo" type="text" class="textbox">
+                                </span>
+                            </div>
+                            <div>
+                                <span>
+                                    <label>Contraseña</label>
+                                </span>
+                                <span>
+                                    <input id="txtClave" name="txtClave" type="password">
+                                </span>
+                            </div>
+                            <div>
+                                <span>
+                                    <label>Confirmar Contraseña</label>
+                                </span>
+                                <span>
+                                    <input id="txtClave2" name="txtClave2" type="password">
+                                </span>
+                            </div>
+                            <div>
+                                <span>
+                                    <!--<input id="btnFacebook" type="button" class="mybutton2" style="background-image: url('../images/btnFacebook.png'); background-size: 100% 100%; width: 120px; background-repeat: no-repeat; padding: 6px 15px;">-->
+                                    <input id="btnLogear" type="button" class="mybutton2" value="Logearse">
+                                    <input id="btnRegistrar" type="submit" class="mybutton" value="Registrar">
+                                </span>
+                            </div>
+                        </form>
+
+                        <div align="center">
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="clear"></div>
+            <br><br><br>
+        </div>
+    </div>
+    <!--Fin Contenido-->
+    <!-- Pop Up -->
+    <div id="element_to_pop_up" style="display:none;">
+
+    </div>
+    <!--Fin Pop up-->
+
+    <!--Footer-->
+    <div class="footer">
+        <div class="copy-right" >
+            <div class="wrap">
+                <div align="center" style="width: 50%; float: right; padding-right: 32px;">
+                    <a id="iconCarrito" href="../Carrito/carrito.html" class="carrito">
+                    </a>
+                </div>
+                <div class="clear"></div>
+            </div>	
+        </div>
+    </div>
+    <!--Fin Footer-->
+    
+    <script src="../cdv-plugin-fb-connect.js"></script>
+    <!-- facebook js sdk -->
+    <script src="../facebook_js_sdk.js"></script>
+    <script>
+        document.addEventListener('deviceready', function() {
+            try {
+                FB.init({appId: "720014738018026", nativeInterface: CDV.FB, useCachedDialogs: false});
+            } catch (e) {
+                alert(e);
+            }
+        }, false);
+        if ((typeof cordova == 'undefined') && (typeof Cordova == 'undefined'))
+            alert('Cordova variable does not exist. Check that you have included cordova.js correctly');
+        if (typeof CDV == 'undefined')
+            alert('CDV variable does not exist. Check that you have included cdv-plugin-fb-connect.js correctly');
+        if (typeof FB == 'undefined')
+            alert('FB variable does not exist. Check that you have included the Facebook JS SDK file.');
+        FB.Event.subscribe('auth.login', function(response) {
+            if (response.status === 'connected') {
+                op1();
+            }
+        });
+
+
+        function login() {
+            FB.login(
+                    function(response) {
+                        if (response.session)
+                        {
+
+                        } else {
+                        }
+                    },
+                    {scope: "email"}
+            );
+        }
+        function op1()
+        {
+            FB.api('/me', function(response)
+            {
+
+                    var correo = response.email;
+                    console.log("correo: "+correo);
+                    var nombres = response.first_name + " " + response.last_name;
+                    $("#txtNombres").val(nombres);
+                    $("#txtCorreo").val(correo);
+
+            });
+        }
+
+    </script>	
+</body>
+</html>
+

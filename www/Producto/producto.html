@@ -1,0 +1,432 @@
+<!--A Design by W3layouts
+Author: W3layout
+Author URL: http://w3layouts.com
+License: Creative Commons Attribution 3.0 Unported
+License URL: http://creativecommons.org/licenses/by/3.0/
+-->
+<!DOCTYPE HTML>
+<head>
+    <title>Domicilio</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <meta name="keywords" content="House Framing Iphone web template, Andriod web template, Smartphone web template, free webdesigns for Nokia, Samsung, LG, SonyErricsson, Motorola web design" />
+    <link href="../css/style.css" rel="stylesheet" type="text/css" media="all"/>
+    <link href="../js/jqueryui/css/base/jquery-ui.css" rel="stylesheet" type="text/css" media="all"/>
+    <script type="text/javascript" src="../js/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript" src="../js/jqueryui/jquery-ui.js"></script>
+    <script type="text/javascript" src="../cordova.js"></script>
+    <script type="text/javascript" src="../js/base.js"></script>
+
+    <script type="text/javascript">
+        //Variable para determinar la cantidad del producto y adiciones
+        var cantidad = 1;
+        //Variables del producto a agregar
+        //id        --> Id del producto en la base de datos
+        //nombre    --> Nombre del producto para mostrarlo en la cabezera
+        //precio    --> Precio del producto para calcular el total
+        //idC       --> Id del comercio al que pertenece el producto
+        var id, nombre, precio, idC = 0;
+        //Variable que almacena el id del producto, luego de ser agregado, este id
+        //se usa para agregar las adiciones
+        var idP = 0;
+        //Variable para manejar el total (sumando productos, adiciones y valor domicilio)
+        var total = 0;
+        function getAdiciones(idProducto)
+        {
+            var url = 'http://mapelo63-001-site1.smarterasp.net/api/menu';
+            var men = "";
+            //Hago el ajax
+            $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'xml',
+                data: {'accion': 'adicio', 'idproducto': idProducto},
+                error: function(data)
+                {
+                    //dialogo("Error", "Lo sentimos, tenemos problemas tecnicos: " + data.toString());
+                    men = "Lo sentimos, tenemos problemas tecnicos: " + data.toString();
+                },
+                success: function(xml)
+                {
+                    var categoriaAnt = "";
+                    var i = 0;
+                    var html = "";
+                    $(xml).find('Producto').each(function()
+                    {
+                        var id = $('id', this).text();
+                        var nombreGrupo = $('nombreGrupo', this).text();
+                        var nombreProducto = $('nombreProducto', this).text();
+                        var precio = $('precio', this).text();
+                        var tipoSeleccion = $('tipoSeleccion', this).text();
+                        var seleccion = "";
+                        if (i == 0)
+                        {
+                            html += "<div class='sidebar_right_top' style='padding-top: 3px;'>" +
+                                    "	<h3 id='head' style='padding-top: 15px;  padding-bottom: 15px;'>" + nombreGrupo + "</h3>" +
+                                    "   <div id='cuerpo' class='latestnews'>";
+                            categoriaAnt = nombreGrupo;
+                        } else {
+
+                            if (nombreGrupo !== categoriaAnt)
+                            {
+                                categoriaAnt = nombreGrupo;
+
+                                html += "<div class='view-all'></div>" +
+                                        "   </div>" +
+                                        "</div>" +
+                                        "<div class='sidebar_right_top' style='padding-top: 3px;'>" +
+                                        "	<h3 id='head' style='padding-top: 15px;  padding-bottom: 15px;'>" + nombreGrupo + "</h3>" +
+                                        "   <div id='cuerpo' class='latestnews'>";
+                            }
+                        }
+                        i++;
+                        if (tipoSeleccion == "MULTIPLE")
+                        {
+                            seleccion = "<input id='c1' nombre='" + nombreProducto + "' precio='" + precio + "' type='checkbox' name='" + nombreGrupo + "' value='" + id + "'><br/>";
+                        } else {
+                            seleccion = "<input id='c1' nombre='" + nombreProducto + "' precio='" + precio + "' type='radio' name='" + nombreGrupo + "' value='" + id + "'><br/>";
+                        }
+                        html +=
+                                "<div class='latestnews_desc' >" +
+                                "	<h4>" + nombreProducto + "</h4>" +
+                                "	<p style='width: 90%; display: block; float: left;'>" +
+                                "	Precio:$ <label id='precio'>" + formato_numero(precio, 0, ",", ".") + " </label><br>" +
+                                "	</p>" +
+                                "       <div id='menu' style='display: block; width: 10%; float: right; padding-top: 15px;'>" +
+                                seleccion +
+                                "       </div>" +
+                                "       <br><br>" +
+                                "<span></span>" +
+                                "</div>";
+                    });
+                    html += "<div class='view-all'></div>" +
+                            "   </div>" +
+                            "</div>";
+                    //Esto indica que el producto si tiene adiciones
+                    if(i>0)
+                    {
+                        $("#tituloAdiciones").css("display","block");
+                    }
+                    $("#adiciones").html(html);
+                    $("#adiciones #cuerpo").hide();
+                    $("#adiciones #head").click(function() {
+                        $(this).next('#cuerpo').slideToggle("slow");
+                    });
+                    //Reinicio el valor del total de aciciones
+                    total = 0;
+                }//Fin Succees
+            }).done(function()
+            {
+                if (men != "")
+                    alert(men);
+            });//Fin ajax
+        }
+        function agregarProducto(id1, nombre1, precio1, idC1)
+        {
+            id = id1;
+            nombre = nombre1;
+            precio = precio1;
+            idC = idC1;
+            //Muestro el dialogo para determinar la cantidad del producto
+            getAdiciones(id);
+        }
+        $(document).ready(function()
+        {
+            (function() {
+                //Obtengo las variables de la url
+                var idC1 = getUrlVars()["idComercio"];
+                var idP1 = getUrlVars()["idProducto"];
+                var nomP1 = getUrlVars()["nombreProducto"];
+                var preP1 = getUrlVars()["precioProducto"];
+                //Reemplazo los %20 por espacion en blanco
+
+                var nomP = decodeURI(nomP1);
+                //Muestro el nombre del producto como titulo
+                $("#titulo").html(nomP);
+                //Traigo las adiciones
+                agregarProducto(idP1, nomP, preP1, idC1);
+
+                //Actualizo el valor el cuadro de texto cantidad
+                $("#txtCantidad").val("1");
+                //Actulizo el valor del producto
+                var totalP = cantidad * precio;
+
+                //Recorro todas las adiciones seleccionadas
+                total = 0;
+                $("#adiciones input:checked").each(function()
+                {
+                    var precioA = $(this).attr("precio");
+                    //Agrego la adicion
+                    total += precioA * cantidad;
+
+                });
+                $("#lblProducto").text(formato_numero(totalP, 0, ",", "."));
+                $("#lblAdiciones").text(formato_numero(total, 0, ",", "."));
+                $("#lblTotal").text(formato_numero(totalP + total, 0, ",", "."));
+
+            })();//Fin funcion autoejecutable
+            //Cuando se oprime en el boton "Agregar Producto
+            $("#btnAgregar").click(function()
+            {
+                cantidad = parseInt($("#txtCantidad").val());
+                if (cantidad > 0 && !isNaN(cantidad))
+                {
+                    //Agrego el producto
+                    idP = addProducto(id, precio, cantidad, nombre, idC);
+                    if (idP != -1)
+                    {
+                        //actualizo el valor de los texto
+                        $("#lblProducto").text(formato_numero(precio * cantidad, 0, ",", "."));
+                        $("#lblAdiciones").text("0");
+                        $("#adiciones input:checked").each(function()
+                        {
+                            var nombre = $(this).attr("nombre");
+                            var id = $(this).val();
+                            var precio = $(this).attr("precio");
+                            //Agrego la adicion
+                            addAdicion(id, idP, precio, nombre, cantidad);
+
+                        });
+                        //Redirijo a la pagina anterior
+                        parent.history.back();
+                    }
+                    //En caso de que se intente agregar un producto de un comercio diferente
+                    else
+                    {
+                        alert("Lo sentimos, el producto que intentas agregar pertenece" +
+                                "a otro comercio.\n Solo puede agregar productos de un mismo comercio");
+
+                    }
+                } else {
+                    alert("Cantidad no valida");
+
+                }
+
+
+            });
+
+            //Cuando se da clic sobre alguna adicion, podremos sumar o restar al total
+            $("#adiciones").on("click", ".latestnews_desc", function(e) {
+                console.log("Entre en el general");
+                //Obtengo las variables
+                var div = $(this).children("div");
+                var input = div.children("input");
+                var precio2 = input.attr("precio");
+                //Determino if el inpuit es un check box, o un radio
+                if (input.attr("type") == "checkbox")
+                {
+                    //Determino si se selecciona o deseleccion el input
+                    if (!input.is(':checked'))
+                    {
+                        //En este caso se desea agregar la adicion
+                        total += parseInt(precio2) * cantidad;
+                        $("#lblAdiciones").text(formato_numero(total, 0, ",", "."));
+                        input.prop("checked", true);
+                        //check.attr('checked','checked');
+
+                    } else {
+                        //En este caso se desea eliminar la adicion
+                        total -= parseInt(precio2) * cantidad;
+                        $("#lblAdiciones").text(formato_numero(total, 0, ",", "."));
+                        input.prop("checked", false);
+                        //check.removeAttr('checked');
+                    }
+                    if (cantidad > 0)
+                    {
+                        var totalP = cantidad * precio;
+                        $("#lblTotal").text(formato_numero(totalP + total, 0, ",", "."));
+                    }
+                } else {
+                    console.log("Es un radio button");
+                    //Actulizo el valor del producto
+                    var totalP = cantidad * precio;
+                    input.prop("checked", true);
+                    //Recorro todas las adiciones seleccionadas
+                    total = 0;
+                    $("#adiciones input:checked").each(function()
+                    {
+                        var precioA = $(this).attr("precio");
+                        //Agrego la adicion
+                        total += precioA * cantidad;
+                        console.log("tipo:"+$(this).attr("type"));
+
+                    });
+                    $("#lblProducto").text(formato_numero(totalP, 0, ",", "."));
+                    $("#lblAdiciones").text(formato_numero(total, 0, ",", "."));
+                    $("#lblTotal").text(formato_numero(totalP + total, 0, ",", "."));
+
+                }
+
+
+
+            });
+
+
+
+            $("#adiciones").on("click", "input", function()
+            {
+                //Como la logica ya esta en la funcion anterior, lo que hago, es si se da clic
+                //dejarlo como estaba, es decir si estaba seleccionado, dejarlo seleccionado
+                //Determino si el input es un check box o un radio
+                if ($(this).attr("type") == "checkbox")
+                {
+                    if (!$(this).is(':checked'))
+                    {
+                        $(this).prop("checked", true);
+
+                    } else {
+                        $(this).prop("checked", false);
+                    }
+                    if (cantidad > 0)
+                    {
+                        var totalP = cantidad * precio;
+                        $("#lblTotal").text(formato_numero(totalP + total, 0, ",", "."));
+                    }
+                } else {
+
+                }
+
+            });
+            //Cuando se cambia el valor del texto "cantidad"
+            $("#txtCantidad").keyup(function()
+            {
+                //Cuando cambie el valor del texto, actualizare los valores de total
+                //Obtengo la cantidad
+                cantidad = $(this).val();
+                //Actulizo el valor del producto
+                var totalP = cantidad * precio;
+
+                //Recorro todas las adiciones seleccionadas
+                total = 0;
+                $("#adiciones input:checked").each(function()
+                {
+                    var precioA = $(this).attr("precio");
+                    //Agrego la adicion
+                    total += precioA * cantidad;
+
+                });
+                $("#lblProducto").text(formato_numero(totalP, 0, ",", "."));
+                $("#lblAdiciones").text(formato_numero(total, 0, ",", "."));
+                $("#lblTotal").text(formato_numero(totalP + total, 0, ",", "."));
+            });
+
+            $("#btnCancelar").click(function()
+            {
+                //Redirijo a la pagina anterior
+                parent.history.back();
+            });
+        });
+    </script>
+    <!-----mobile-menu----->
+    <link type="text/css" rel="stylesheet" href="../css/jquery.mmenu.all.css" />
+    <script type="text/javascript" src="../js/jquery.mmenu.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            iniciarMenu();
+            //Muestro el correo del usuario
+            if (getCorreoUsuario() != null)
+                $("#welc").html(getCorreoUsuario());
+            else
+                $("#welc").html("");
+        });
+    </script>
+    <!-----/mobile-menu----->
+</head>
+<body>
+    <!-- Menu -->
+    <div id="page">
+        <div id="header">
+            <a class="navicon" id="iconMenu" href="#menu-left"> </a>        
+            <a class="navicon2" id="iconMenu2" href="#menu-left"> </a>        
+        </div>
+        <nav id="menu-left">
+            <ul>
+                <li><a href="#" id="welc">Bienvenido: </a></li>
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="../ciudad.html">Ciudad</a></li>
+                <li><a href="../ubicacion.html">Direccion</a></li>
+                <li><a href="../Carrito/carrito.html">Carrito</a></li>
+                <li><a href="#" onclick="cerrarSesion('../')">Cerrar Sesion</a></li>
+                <li><a href="#" onclick="salir()">Salir</a></li>
+            </ul>
+        </nav>
+    </div>
+    <!-- Fin Menu -->
+    <div class="header" id="top">
+        <div class="header_top">
+            <div class="wrap">	 
+                <div class="logo">
+                    <a href="index.html"><img src="../images/logo.png" alt="" class="logo1" /></a>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+
+    </div>
+    <div class="main">  
+        <div class="wrap"> 
+            <div class="content">
+                <div class="sidebar_right_bottom">
+                    <h3 id="titulo">Nombre</h3>
+                    <div class="login_form">        		
+                        <form id="form">
+                            <div>
+                                <label>Cantidad: </label>
+                                <input id="txtCantidad" name="txtCantidad" type="number" class="textbox" >
+                            </div>
+                        </form>
+                    </div>
+                    <h3 id="tituloAdiciones" style="display: none">Adiciones</h3>
+                </div>
+                <div id="adiciones" class="sidebar">
+
+                </div>
+                <div class="content">
+                    <div class="content_bottom">
+                        <h2>Producto: $<label id="lblProducto">0</label></h2>
+                        <h2>Adiciones: $ <label id="lblAdiciones">0</label></h2>
+                        <h2>Total: $ <label id="lblTotal">0</label></h2>
+                    </div>
+                </div>
+                <div align="center">
+                    <input id="btnAgregar" type="button" class="mybutton2" value="Agregar Producto">
+                    <input id="btnCancelar" type="button" class="mybutton2" value="Cancelar" >
+                </div>
+                <br>
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+
+    <!--Footer-->
+    <div class="footer">
+        <div class="copy-right" >
+
+            <div align="center" style="width: 100%; height: 100%">
+                <a id="iconCarrito" href="../Carrito/carrito.html" >
+                    <img id="imgCarrito" src="../images/carrito.png" class="carrito"/>
+                    <!--JavaScript para cambiar la imagen la imagen-->
+                    <script type="text/javascript" >
+                        (function()
+                        {
+                            var carrito = getCarrito();
+                            var i = 0;
+                            var html = "";
+                            if (carrito.productos.length > 0)
+                            {
+                                $("#imgCarrito").attr("src", "../images/carritoFull.png");
+                            }
+                        })();
+                    </script>
+                </a>
+            </div>
+            <div class="clear"></div>
+
+        </div>
+    </div>
+    <!--Fin Footer-->
+</body>
+</html>
+

@@ -1,0 +1,266 @@
+<!--A Design by W3layouts
+Author: W3layout
+Author URL: http://w3layouts.com
+License: Creative Commons Attribution 3.0 Unported
+License URL: http://creativecommons.org/licenses/by/3.0/
+-->
+<!DOCTYPE HTML>
+<head>
+    <title>Domicilio</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <meta name="keywords" content="House Framing Iphone web template, Andriod web template, Smartphone web template, free webdesigns for Nokia, Samsung, LG, SonyErricsson, Motorola web design" />
+    <link href="../css/style.css" rel="stylesheet" type="text/css" media="all"/>
+    <link href="../js/jqueryui/css/base/jquery-ui.css" rel="stylesheet" type="text/css" media="all"/>
+    <script type="text/javascript" src="../js/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript" src="../js/jqueryui/jquery-ui.js"></script>
+    <script type="text/javascript" src="../cordova.js"></script>
+    <script type="text/javascript" src="../js/base.js"></script>
+
+    <script type="text/javascript">
+        function pintarCarrito()
+        {
+            $("#tblCarrito").html("");
+            var carrito = getCarrito();
+            var i = 0;
+            var html = "";
+            if (carrito.productos.length > 0)
+            {
+                //Muestro el listado de prodcutos en el carrito
+                for (i = 0; i < carrito.productos.length; i++)
+                {
+                    var producto = carrito.productos[i];
+                    html += "<div class='section group service_desc'>" +
+                            "<div class='listview_1_of_2 images_1_of_2'>" +
+                            "<div class='text list_2_of_1'>" +
+                            "<h4>" + producto[4] + "</h4>" +
+                            "<p>" +
+                            "Precio: $ " + formato_numero(producto[2], 0, ",", ".") + " <br>" +
+                            "Cantidad: " + producto[3] + "<br>" +
+                            "</p><br>";
+                    if (carrito.tieneAdiciones(producto[0]))
+                    {
+                        html += "<div class='services'>" +
+                                "<h3 id='head' style='color:#FFFFFF;'>Adiciones <div id='expandir'  style='float: right; padding-right: 15px; font-size: 30px;'><img id='imgExpandir' src='../images/down.png' /></div></h3>" +
+                                "<div id='cuerpo' class='services_list'>" +
+                                "    <ul>";
+                        //Busco las adiciones de este producto
+                        for (j = 0; j < carrito.adiciones.length; j++)
+                        {
+                            var adicion = carrito.adiciones[j];
+                            if (adicion[2] == producto[0])
+                            {
+                                html += "<li><a href='#'>";
+                                html += "Nombre: " + adicion[4] + "<br>";
+                                html += "Precio:$ " + formato_numero(adicion[3], 0, ",", ".") + "<br>";
+                                html += "</a></li>";
+                            }
+
+                        }
+                        html += "    </ul>" +
+                                "</div>" +
+                                "</div>";
+                    }//Fin If tiene adiciones
+                    html += "</div>" +
+                            "<div class='btnEliminar' style='float: right; display: block; width: 10%; padding-top: 15px;'>" +
+                            "<img src = '../images/delete.png' onClick=\"eliminarProductoCarrito(" + producto[0] + ")\" > </img>" +
+                            "</div>" +
+                            "</div>" +
+                            "</div>	" +
+                            "";
+
+
+
+                }//Fin For Productos
+            }//Si el carrito no tiene productos
+            else
+            {
+                html = "<div class='section group'><div class='col_1_of_4 span_1_of_4'>" +
+                        "       <h3 style='color:white'> Sin productos </h3>" +
+                        "       <div class='Testimonials_desc'>" +
+                        "               <p>" +
+                        "                       <span class='up'>" +
+                        "                               <img alt='' src='../images/quotes.png'></img>" +
+                        "                       </span>" +
+                        "                               Aun no has agregado productos al carrito, para agregar un producto, dirígete al local deseado y selecciona los producto" +
+                        "                       <span class='down'>" +
+                        "                               <img alt='' src='../images/quotes-down.png'></img>" +
+                        "                       </span>" +
+                        "               </p>" +
+                        "       </div>" +
+                        "</div></div>";
+                //Oculto la zona que muestra el total y el boton confirmar
+                $("#tblTotal").css("display", "none");
+            }
+            $("#tblCarrito").html(html);
+            $(".services #cuerpo").hide();
+            $(".services #head").click(function()
+            {
+                //Cambio el simbolo
+                var te = $(this).find("#imgExpandir").attr("src");
+
+                switch (te)
+                {
+                    case "../images/down.png":
+                        $(this).find("#imgExpandir").attr("src", "../images/up.png");
+                        break;
+                    case "../images/up.png":
+                        $(this).find("#imgExpandir").attr("src", "../images/down.png");
+                        break;
+                }
+                $(this).next('#cuerpo').slideToggle("slow");
+            });
+            //Muestro los valores
+            var total = carrito.calcularTotal();
+            var valorDomi = carrito.valorDomicilio;
+            var subTotal = total - valorDomi;
+            $("#lblTotal").text(formato_numero(total, 0, ",", "."));
+            $("#lblSubTotal").text(formato_numero(subTotal, 0, ",", "."));
+            $("#lblDomicilio").text(formato_numero(valorDomi, 0, ",", "."));
+
+
+        }
+        function eliminarProductoCarrito(id)
+        {
+            var car = getCarrito();
+            car.eliminarProducto(id);
+            //almaceno en la sesion
+            setVariable("carrito", car.toString());
+            //Determino si hay productos, en caso contrario redirijo a la pagina buscar
+            if (car.productos.length == 0)
+                $(location).attr("href", "../buscar.html");
+            pintarCarrito();
+        }
+        $(document).ready(function()
+        {
+            (function()
+            {
+                pintarCarrito();
+                $("#titulo").html(getNombreComercio());
+            })();
+            $("#btnConfirmar").click(function(e)
+            {
+                e.preventDefault();
+                //Determino que el usuario se haya logeado
+                if (getIdUsuario() != -1)
+                {
+                    //Determino que haya una direccion en el sistema
+                    if (getDireccion())
+                        $(location).attr("href", "confirmarCompra.html");
+                    else
+                        $(location).attr("href", "../Direccion/Crear.html");
+                }//Redirijo para que el usuario se logee
+                else {
+                    //Activo la variable, para que luego de que se registre, se redirija a la pagina de confirmacion
+                    setVariable("confirmarCompra", true);
+                    $(location).attr("href", "../index.html");
+                }
+            });
+        });
+    </script>
+
+    <!-----mobile-menu----->
+    <link type="text/css" rel="stylesheet" href="../css/jquery.mmenu.all.css" />
+    <script type="text/javascript" src="../js/jquery.mmenu.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            iniciarMenu();
+        });
+    </script>
+    <!-----/mobile-menu----->
+</head>
+<body>
+    <!-- Menu -->
+    <div id="page">
+        <div id="header">
+            <a class="navicon" id="iconMenu" href="#menu-left"> </a>        
+            <a class="navicon2" id="iconMenu2" href="#menu-left"> </a>        
+        </div>
+        <nav id="menu-left">
+            <ul>
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="../ciudad.html">Ciudad</a></li>
+                <li><a href="../ubicacion.html">Direccion</a></li>
+                <li><a href="carrito.html">Carrito</a></li>
+                <li><a href="#" onclick="cerrarSesion('../')">Cerrar Sesion</a></li>
+                <li><a href="#" onclick="salir()">Salir</a></li>
+            </ul>
+        </nav>
+    </div>
+    <!-- Fin Menu -->
+    <!--Cabecera-->
+    <div class="header" id="top">
+        <div class="header_top">
+            <div class="wrap">	 
+                <div class="logo">
+                    <a href="../index.html"><img src="../images/logo.png" class="logo1" alt="" /></a>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+
+    </div>
+    <!--Fin Cabecera-->
+    <!--Contenido-->
+    <div class="main">  
+        <div class="wrap">
+            <div class="content">            
+                <div class="sidebar_right_bottom" >
+                    <!--Titulo-->
+                    <h3 id="titulo">Comercio</h3>
+                    <!--Fin Titulo-->
+                    <!--Productos y Adiciones-->
+                    <div class="content_bottom" id="tblCarrito">
+
+                    </div>
+                    <!--Fin Productos y Adiciones-->
+                </div>
+
+                <div class="clear"></div>
+            </div>
+        </div>
+        <div class="content" id="tblTotal">
+            <!--Precios-->
+            <div class="content_bottom">
+                <h2>Sub Total: $ <label id="lblSubTotal">0</label></h2>
+                <h2>Domicilio: $ <label id="lblDomicilio">0</label></h2>
+                <h2>Total: $ <label id="lblTotal">0</label></h2>
+                <input id="btnConfirmar" type="submit" class="mybutton" value="Confirmar">
+                <br>
+                <br>
+            </div>
+            <!--Fin Precios-->
+        </div>
+    </div>																									
+    <!--Fin Contenido-->
+    <!--Footer-->
+    <div class="footer">
+        <div class="copy-right" >
+
+            <div align="center" style="width: 100%; height: 100%">
+                <a id="iconCarrito" href="Carrito/carrito.html" >
+                    <img id="imgCarrito" src="../images/carrito.png" class="carrito"/>
+                    <!--JavaScript para cambiar la imagen la imagen-->
+                    <script type="text/javascript" >
+                        (function()
+                        {
+                            var carrito = getCarrito();
+                            var i = 0;
+                            var html = "";
+                            if (carrito.productos.length > 0)
+                            {
+                                $("#imgCarrito").attr("src", "../images/carritoFull.png");
+                            }
+                        })();
+                    </script>
+                </a>
+            </div>
+            <div class="clear"></div>
+
+        </div>
+    </div>
+    <!--Fin Footer-->
+</body>
+</html>
+

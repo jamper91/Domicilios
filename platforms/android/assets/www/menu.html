@@ -1,0 +1,270 @@
+<!--A Design by W3layouts
+Author: W3layout
+Author URL: http://w3layouts.com
+License: Creative Commons Attribution 3.0 Unported
+License URL: http://creativecommons.org/licenses/by/3.0/
+-->
+<!DOCTYPE HTML>
+<head>
+    <title>Domicilio</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <meta name="keywords" content="House Framing Iphone web template, Andriod web template, Smartphone web template, free webdesigns for Nokia, Samsung, LG, SonyErricsson, Motorola web design" />
+    <link href="css/style.css" rel="stylesheet" type="text/css" media="all"/>
+    <link href="js/jqueryui/css/base/jquery-ui.css" rel="stylesheet" type="text/css" media="all"/>
+    <script type="text/javascript" src="js/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript" src="js/jqueryui/jquery-ui.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/base.js"></script>
+    <!--bPopup-->
+    <script type="text/javascript" src="js/jquery.bpopup.min.js"></script>
+    <!--Fin bPopup-->
+    <script type="text/javascript">
+        var cantidad = 1, id, nombre, precio;
+        var idP = 0;
+        var total = 0;
+
+        $(document).ready(function()
+        {
+
+            (function() {
+                //Obtengo las variables del url y las mando al carrito de compras
+                var valorDomicilio = getUrlVars()["valorDomicilio"];
+                var idComercio = getUrlVars()["idComercio"];
+                var idCiudad = getUrlVars()["idCiudad"];
+                var nombreComercio2 = getUrlVars()["nombreComercio"];
+                var nombreComercio = decodeURI(nombreComercio2);
+                var idagencia;
+                //Primero verifico si la hay una sucursal que tenga covertura
+                $.ajax({
+                    url: "http://mapelo63-001-site1.smarterasp.net/api/geo",
+                    type: "GET",
+                    dataType: 'xml',
+                    data: {
+                        'idciudad': idCiudad,
+                        'idComercio': idComercio,
+                        'idagencia': 0,
+                        'cx': getCx(),
+                        'cy': getCy()
+                    },
+                    error: function(data)
+                    {
+                        men = "Lo sentimos, tenemos problemas tecnicos: " + data.toString();
+                    },
+                    success: function(xml1)
+                    {
+                        idagencia = $(xml1, 'int', this).text();
+                        //idagencia=1;
+
+                    }//Fin Succees
+
+                }).done(function()
+                {
+                    //Determino si el comercio tiene covertura
+                    if (idagencia > 0)
+                    {
+                        //Esto con el fin de solo agregar productos de un mismo local
+                        setDetallesComercioCarrito(idComercio, valorDomicilio, idCiudad,idagencia,nombreComercio);
+                        //Obteniendo el menu del comercio
+                        //Variables para el Ajax
+                        var url = "http://mapelo63-001-site1.smarterasp.net/api/menu";
+                        var html = "";
+
+
+                        //Hago el ajax
+                        //Muestro el mensaje de cargando
+                        dialogo("<img src='images/loading.GIF' /> Consultando");
+                        var men = "";
+                        $.ajax({
+                            url: url,
+                            type: 'GET',
+                            dataType: 'xml',
+                            data: {'idComercio': idComercio},
+                            error: function(data)
+                            {
+                                men = "Lo sentimos, tenemos problemas tecnicos: " + data.toString();
+                            },
+                            success: function(xml)
+                            {
+                                //Obtengo el valor devuelto por el webservice
+                                var i = 0;
+
+                                var categoriaAnt = "";
+                                $(xml).find('Producto').each(function()
+                                {
+                                    console.log("Entre al comercio: "+idComercio);
+                                    var descripcion = $('descripcion', this).text();
+                                    var id = $('id', this).text();
+                                    var imagen = $('imagen', this).text();
+                                    var nombreGrupo = $('nombreGrupo', this).text();
+                                    var nombreProducto = $('nombreProducto', this).text();
+                                    var precio = $('precio', this).text();
+                                    var htmlImagen="";
+                                    
+                                   console.log("descripcion: "+descripcion);
+                                   console.log("id "+id);
+                                   console.log("imagen "+imagen);
+                                   console.log("nombreGrupo "+nombreGrupo);
+                                   console.log("nombreProducto "+nombreProducto);
+                                   console.log("precio "+precio);
+                                    if(imagen!="")
+                                    {
+                                        htmlImagen="<div class='latestnews_desc' style=\"background: url('" + imagen + "');height: 80px;\"></div>";
+                                    }
+                                    if (i == 0)
+                                    {
+                                        html += "<div class='sidebar_right_top' style='padding-top: 3px;'>" +
+                                                "	<h3 id='head' style=\"padding-top: 15px;  padding-bottom: 15px;\">" + nombreGrupo + "</h3>" +
+                                                "   <div id='cuerpo' class='latestnews'>" +
+                                                        htmlImagen;
+                                        categoriaAnt = nombreGrupo;
+                                    } else {
+
+                                        if (nombreGrupo != categoriaAnt)
+                                        {
+                                            categoriaAnt = nombreGrupo;
+                                            html += "<div class='view-all'></div>" +
+                                                    "   </div>" +
+                                                    "</div>" +
+                                                    "<div class='sidebar_right_top' style='padding-top: 3px;'>" +
+                                                    "	<h3 id='head' style=\"padding-top: 15px;  padding-bottom: 15px;);\">" + nombreGrupo + "</h3>" +
+                                                    "   <div id='cuerpo' class='latestnews'>" +
+                                                            htmlImagen;
+                                        }
+                                    }
+                                    i++;
+                                    html += "<a href='Producto/producto.html?idComercio=" + idComercio + "&idProducto=" + id + "&nombreProducto=" + nombreProducto + "&precioProducto=" + precio + "'>" +
+                                            "<div class='latestnews_desc' >" +
+                                            "	<h4>" + nombreProducto + "</h4>" +
+                                            "	<p>" +
+                                            "	" + descripcion + " <br>" +
+                                            "	Precio:$ " + formato_numero(precio, 0, ",", ".") + " <br>" +
+                                            "	</p>" +
+                                            "<span></span>" +
+                                            "</div></a>";
+                                });//Fin de recorrer cada producto
+                                html += "<div class='view-all'></div>" +
+                                        "   </div>" +
+                                        "</div>";
+                                $("#menu").html(html);
+                                $("#menu #cuerpo").hide();
+                                $("#menu #cuerpo").first().show();
+                                $("#menu #head").click(function() {
+                                    $(this).next('#cuerpo').slideToggle("slow");
+
+                                });
+
+                            }//Fin Succees
+                        }).done(function()
+                        {
+                            //Cierro el mensaje
+                            cerrarDialog();
+                            if (men != "")
+                                alert(men);
+                        });//Fin ajax para obtener el menu
+                    }//Fin del If para determinar si tiene covertura
+                    else
+                    {
+                        alert("Lo sentimos, este comercio no tiene cobertura");
+                        //Redirijo a la pagina de busqueda
+                        $(location).attr("href", "buscar.html");
+                        
+                    }
+                });//Fin del ajax para determinar si el local tiene covertura
+
+
+
+            })();//Fin funcion autoejecutable
+
+
+        });
+    </script>
+    <!-----mobile-menu----->
+    <link type="text/css" rel="stylesheet" href="css/jquery.mmenu.all.css" />
+    <script type="text/javascript" src="js/jquery.mmenu.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            iniciarMenu();
+            //Muestro el correo del usuario
+            if (getCorreoUsuario() != null)
+                $("#welc").html(getCorreoUsuario());
+            else
+                $("#welc").html("");
+        });
+    </script>
+    <!-----/mobile-menu----->
+</head>
+<body>
+    <!-- Menu -->
+    <div id="page">
+        <div id="header">
+            <a class="navicon" id="iconMenu" href="#menu-left"> </a>        
+            <a class="navicon2" id="iconMenu2" href="#menu-left"> </a>        
+        </div>
+        <nav id="menu-left">
+            <ul>
+                <li><a href="#" id="welc">Bienvenido: </a></li>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="ciudad.html">Ciudad</a></li>
+                <li><a href="ubicacion.html">Direccion</a></li>
+                <li><a href="Carrito/carrito.html">Carrito</a></li>
+                <li><a href="#" onclick="cerrarSesion('')">Cerrar Sesion</a></li>
+                <li><a href="#" onclick="salir()">Salir</a></li>
+            </ul>
+        </nav>
+    </div>
+    <!-- Fin Menu -->
+    <div class="header" id="top">
+        <div class="header_top">
+            <div class="wrap">	 
+                <div class="logo">
+                    <a href="index.html"><img src="images/logo.png" alt="" class="logo1" /></a>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+
+    </div>
+    <div id="menu1" style="padding-left: 25px">
+        <div id="menu" class="sidebar">
+
+        </div>
+        <br><br><br>
+    </div>
+    <!-- Pop Up -->
+    <div id="element_to_pop_up" style="display:none;">
+
+    </div>
+    <!--Fin Pop up-->
+
+    <!--Footer-->
+    <div class="footer">
+        <div class="copy-right" >
+
+            <div align="center" style="width: 100%; height: 100%">
+                <a id="iconCarrito" href="Carrito/carrito.html" >
+                    <img id="imgCarrito" src="images/carrito.png" class="carrito"/>
+                    <!--JavaScript para cambiar la imagen la imagen-->
+                    <script type="text/javascript" >
+                        (function()
+                        {
+                            var carrito = getCarrito();
+                            var i = 0;
+                            var html = "";
+                            if (carrito.productos.length > 0)
+                            {
+                                $("#imgCarrito").attr("src", "images/carritoFull.png");
+                            }
+                        })();
+                    </script>
+                </a>
+            </div>
+            <div class="clear"></div>
+
+        </div>
+    </div>
+    <!--Fin Footer-->
+</body>
+</html>
+

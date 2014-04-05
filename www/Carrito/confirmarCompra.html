@@ -1,0 +1,411 @@
+<!--A Design by W3layouts
+Author: W3layout
+Author URL: http://w3layouts.com
+License: Creative Commons Attribution 3.0 Unported
+License URL: http://creativecommons.org/licenses/by/3.0/
+-->
+<!DOCTYPE HTML>
+<head>
+    <title>Domicilio</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <meta name="keywords" content="House Framing Iphone web template, Andriod web template, Smartphone web template, free webdesigns for Nokia, Samsung, LG, SonyErricsson, Motorola web design" />
+    <link href="../css/style.css" rel="stylesheet" type="text/css" media="all"/>
+    <link href="../js/jqueryui/css/base/jquery-ui.css" rel="stylesheet" type="text/css" media="all"/>
+    <script type="text/javascript" src="../js/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript" src="../js/jqueryui/jquery-ui.js"></script>
+    <script type="text/javascript" src="../cordova.js"></script>
+    <script type="text/javascript" src="../js/base.js"></script>
+
+    <script type="text/javascript">
+        function pintarCarrito()
+        {
+            $("#tblCarrito").html("");
+            var carrito = getCarrito();
+            var i = 0;
+            var html = "";
+            if (carrito.productos.length > 0)
+            {
+                //Muestro el listado de prodcutos en el carrito
+                for (i = 0; i < carrito.productos.length; i++)
+                {
+                    var producto = carrito.productos[i];
+                    html += "<div class='section group service_desc'>" +
+                            "<div class='listview_1_of_2 images_1_of_2'>" +
+                            "<div class='text list_2_of_1'>" +
+                            "<h4>" + producto[4] + "</h4>" +
+                            "<p>" +
+                            "Precio: $ " + formato_numero(producto[2], 0, ",", ".") + " <br>" +
+                            "Cantidad: " + producto[3] + "<br>" +
+                            "</p><br>";
+                    if (carrito.tieneAdiciones(producto[0]))
+                    {
+                        html += "<div class='services'>" +
+                                "<h3 id='head' style='color:#FFFFFF;'>Adiciones <div id='expandir'  style='float: right; padding-right: 15px; font-size: 30px;'>+</div></h3>" +
+                                "<div id='cuerpo' class='services_list'>" +
+                                "    <ul>";
+                        //Busco las adiciones de este producto
+                        for (j = 0; j < carrito.adiciones.length; j++)
+                        {
+                            var adicion = carrito.adiciones[j];
+                            if (adicion[2] == producto[0])
+                            {
+                                html += "<li><a href='#'>";
+                                html += "Nombre: " + adicion[4] + "<br>";
+                                html += "Precio:$ " + formato_numero(adicion[3], 0, ",", ".") + "<br>";
+                                html += "</a></li>";
+                            }
+
+                        }
+                        html += "    </ul>" +
+                                "</div>" +
+                                "</div>";
+                    }//Fin If tiene adiciones
+                    html += "</div>" +
+                            "</div>" +
+                            "</div>	" +
+                            "";
+
+
+
+                }//Fin For Productos
+            }//Fin del if
+            else {
+                html = "<div class='footer'><div class='wrap'><div class='section group'><div class='col_1_of_4 span_1_of_4'>" +
+                        "       <h3> Sin productos </h3>" +
+                        "       <div class='Testimonials_desc'>" +
+                        "               <p>" +
+                        "                       <span class='up'>" +
+                        "                               <img alt='' src='../images/quotes.png'></img>" +
+                        "                       </span>" +
+                        "                               Aun no haz agregado productos al carrito, para agregar un producto, dirijete al local deseado y selecciona el producto" +
+                        "                       <span class='down'>" +
+                        "                               <img alt='' src='../images/quotes-down.png'></img>" +
+                        "                       </span>" +
+                        "               </p>" +
+                        "       </div>" +
+                        "</div></div></div></div>";
+            }
+            $("#tblCarrito").html(html);
+            $(".services #cuerpo").hide();
+            $(".services #head").click(function()
+            {
+                //Cambio el simbolo
+                var te = $(this).find("#expandir").html();
+                switch (te)
+                {
+                    case "+":
+                        $(this).find("#expandir").html("-");
+                        break;
+                    case "-":
+                        $(this).find("#expandir").html("+");
+                        break;
+                }
+                console.log("simbolo: |" + te + "|");
+                $(this).next('#cuerpo').slideToggle("slow");
+            });
+            
+            
+            //Muestro los valores
+            var total = carrito.calcularTotal();
+            var valorDomi = carrito.valorDomicilio;
+            var subTotal = total - valorDomi;
+            $("#lblTotal").text(formato_numero(total, 0, ",", "."));
+            $("#lblSubTotal").text(formato_numero(subTotal, 0, ",", "."));
+            $("#lblDomicilio").text(formato_numero(valorDomi, 0, ",", "."));
+        }
+        function pintarDatos()
+        {
+            //Obtengo la informacion del usuario
+            var html = "";
+            html += "<li><a href='#'>Nombre: " + getCorreoUsuario() + "</a></li>";
+            html += "<li><a href='#'>Direccion " + getDireccion() + "</a></li>";
+            $("#datos").append(html);
+            var url = "http://mapelo63-001-site1.smarterasp.net/api/direccion";
+            //Debo obtener el campo "otros" de la direccion
+            $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'xml',
+                data: {'accion': "consulta",
+                    'iddireccion': getIdDireccion()
+                },
+                error: function(data)
+                {
+                    //dialogo("Error", "Lo sentimos, tenemos problemas tecnicos");
+                },
+                success: function(xml)
+                {
+                    var otros = $('otros', xml).text();
+                    console.log("otros " + otros);
+                    $("#txtOtros").val(otros);
+                }
+            });
+
+
+        }
+        $(document).ready(function()
+        {
+            //Llamo al web service para confirmar el pedido
+            $("#btnConfirmar").click(function(e)
+            {
+                e.preventDefault();
+                //Datos  a usar por el web service
+                var url = "http://mapelo63-001-site1.smarterasp.net/api/pedido";
+                var car = getCarrito();
+                var idcomercio, idciudad, idsucursal, idusuario, iddireccion;
+                var observaciones, direccionCompleta, telefono, strProductos, strAdiciones;
+                var mensaje = "";
+                idcomercio = car.idComercio;
+                idciudad = car.idCiudad;
+                idsucursal = car.idAgencia;
+                idusuario = car.idUsuario;
+                observaciones = $("#txtObservaciones").val();
+                iddireccion = getIdDireccion();
+                direccionCompleta = getDireccion() + " " + $("#txtOtros").val();
+                telefono = $("#txtTelefono").val();
+                if (telefono)
+                {
+                    //Genero el string de los productos
+                    strProductos = "";
+                    for (var i = 0; i < car.productos.length; i++)
+                    {
+                        var pro = car.productos[i];
+                        strProductos += pro[0] + "|" + pro[1] + "|" + pro[3] + "|" + pro[4] + "|" + pro[2] + "_";
+                    }
+                    strProductos=strProductos.substring(0,strProductos.length-1);
+                    //Genero el string de las adiciones
+                    strAdiciones = "";
+                    for (var i = 0; i < car.adiciones.length; i++)
+                    {
+                        var adi = car.adiciones[i];
+                        strAdiciones += adi[0] + "|" + adi[1] + "|" + adi[4] + "|" + adi[5] + "|" + adi[3] + "_";
+                    }
+                    strAdiciones=strAdiciones.substring(0,strAdiciones.length-1);
+                    console.log('idcomercio:'+ idcomercio);
+                    console.log('idciudad:'+ idciudad);
+                    console.log('idsucursal:'+ idsucursal);
+                    console.log('idusuario:'+ idusuario);
+                    console.log('observaciones:'+ observaciones);
+                    console.log('iddireccion:'+ iddireccion);
+                    console.log('direccionCompleta:'+ direccionCompleta);
+                    console.log('telefono:'+ telefono);
+                    console.log('strProductos:'+ strProductos);
+                    console.log('strAdiciones:'+ strAdiciones);
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        dataType: 'xml',
+                        data: {
+                            'idcomercio': idcomercio,
+                            'idciudad': idciudad,
+                            'idsucursal': idsucursal,
+                            'idusuario': idusuario,
+                            'observaciones': observaciones,
+                            'iddireccion': iddireccion,
+                            'direccionCompleta': direccionCompleta,
+                            'telefono': telefono,
+                            'strProductos': strProductos,
+                            'strAdiciones': strAdiciones
+                        },
+                        error: function(data)
+                        {
+                            mensaje = "Lo sentimos, tenemos problemas tecnicos";
+                        },
+                        success: function(xml)
+                        {
+
+                            //Obtengo el valor devuelto por el webservice
+                            var re = $('string', xml).text();
+                            if (re == '0')
+                            {
+                                mensaje = "Tu pedido ha sido confirmado";
+
+                            } else
+                            {
+                                mensaje = "Hubo un problema al confirmar el pedido: " + re;
+                            }
+                        }//Fin success
+                    }).done(function()
+                    {
+                        alert(mensaje);
+                        if(mensaje=="Tu pedido ha sido confirmado")
+                        {
+                            //Limpiar Datos
+                        nuevaSesion();
+                        //Redirigir
+                        $(location).attr("href", "../ubicacion.html");
+                        }
+                        
+                    });//Fin ajax de confirmar pedido
+                }
+                //Si no se digito el teledono
+                else
+                {
+                    alert("Lo sentimos, debes digitar un numero telefonico");
+                }
+
+
+
+            });
+            (function()
+            {
+                pintarCarrito();
+                pintarDatos();
+            })();
+
+        });
+    </script>
+    <!-----mobile-menu----->
+    <link type="text/css" rel="stylesheet" href="../css/jquery.mmenu.all.css" />
+    <script type="text/javascript" src="../js/jquery.mmenu.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            iniciarMenu();
+        });
+    </script>
+    <!-----/mobile-menu----->
+</head>
+<body>
+    <!-- Menu -->
+    <div id="page">
+        <div id="header">
+            <a class="navicon" id="iconMenu" href="#menu-left"> </a>        
+            <a class="navicon2" id="iconMenu2" href="#menu-left"> </a>        
+        </div>
+        <nav id="menu-left">
+            <ul>
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="../ciudad.html">Ciudad</a></li>
+                <li><a href="../ubicacion.html">Direccion</a></li>
+                <li><a href="carrito.html">Carrito</a></li>
+                <li><a href="#" onclick="cerrarSesion('../')">Cerrar Sesion</a></li>
+                <li><a href="#" onclick="salir()">Salir</a></li>
+            </ul>
+        </nav>
+    </div>
+    <!-- Fin Menu -->
+    <!--Logo-->
+    <div class="header" id="top">
+        <div class="header_top">
+            <div class="wrap">	 
+                <div class="logo">
+                    <a href="../index.html"><img src="../images/logo.png" class="logo1" alt="" /></a>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+
+    </div>
+    <!--Fin Logo-->
+    <!--Contenido-->
+    <div class="main">  
+        <div class="wrap">  
+            <div class="services">
+                <h3>Datos</h3>
+                <!--Datos Cliente-->
+                <div class="services_list">
+                    <ul id="datos">
+                    </ul>
+                </div>
+                <!--Fin Datos Cliente-->
+                <!--Formulario del Pedido-->
+                <div class="login_form">        		
+                    <form>
+                        <table>
+                            <tr>
+                                <td >
+                                    <span>
+                                        Otros(Apartamento, Edificio, Interior,etc)
+                                    </span>
+                                </td>
+                                <td>
+                                    <span><input id="txtOtros" name="txtOtros" type="text"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td >
+                                    <span>
+                                        Observaciones
+                                    </span>
+                                </td>
+                                <td>
+                                    <span><input id="txtObservaciones" name="txtObservaciones" type="text"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td >
+                                    <span>
+                                        Telefono
+                                    </span>
+                                </td>
+                                <td>
+                                    <span><input id="txtTelefono" name="txtTelefono" type="number"></span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <br>
+
+                    </form>
+                </div>
+                <!--Fin Formulario del Pedido-->
+                <h3>Productos</h3>
+                <br>
+
+            </div>
+            <!--Productos y Adiciones-->
+            <div class="services_grid" >
+
+                <div class="content_bottom" id="tblCarrito">
+
+                </div>
+            </div>
+            <!--Fin Productos y Adiciones-->
+            <div class="clear"></div>
+        </div>
+        <!--Total del pedido-->
+        <div class="content">
+            <div class="content_bottom">
+                <h2>Sub Total: $ <label id="lblSubTotal">0</label></h2>
+                <h2>Domicilio: $ <label id="lblDomicilio">0</label></h2>
+                <h2>Total: $ <label id="lblTotal">0</label></h2>
+                <input id="btnConfirmar" type="submit" class="mybutton" value="Confirmar">
+                <br>
+                <br>
+            </div>
+        </div>
+        <!--Fin Total del pedido-->
+    </div>																									
+    <!--Fin Contenido-->
+    <!--Footer-->
+    <div class="footer">
+        <div class="copy-right" >
+
+            <div align="center" style="width: 100%; height: 100%">
+                <a id="iconCarrito" href="carrito.html" >
+                    <img id="imgCarrito" src="../images/carrito.png" class="carrito"/>
+                    <!--JavaScript para cambiar la imagen la imagen-->
+                    <script type="text/javascript" >
+                        (function()
+                        {
+                            var carrito = getCarrito();
+                            var i = 0;
+                            var html = "";
+                            if (carrito.productos.length > 0)
+                            {
+                                $("#imgCarrito").attr("src", "../images/carritoFull.png");
+                            }
+                        })();
+                    </script>
+                </a>
+            </div>
+            <div class="clear"></div>
+
+        </div>
+    </div>
+    <!--Fin Footer-->
+</body>
+</html>
+
